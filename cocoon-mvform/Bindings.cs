@@ -1,0 +1,106 @@
+﻿using System;
+using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace cocoon.mvform.bindings
+{
+
+    public abstract class ModelControlBinding
+    {
+
+        public abstract void UpdateControl(Control control, object value);
+
+        public abstract object UpdateModel(Control control);
+
+        public abstract void UpdateDataSource(Control control, object value);
+
+        public static object ChangeType(object value, Type conversionType)
+        {
+
+            if (value == null)
+                return null;
+
+            if (value.GetType() == conversionType)
+                return value;
+
+            if (conversionType.IsGenericType && conversionType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+                conversionType = Nullable.GetUnderlyingType(conversionType);
+
+            return TypeDescriptor.GetConverter(conversionType).ConvertFrom(value);
+
+        }
+
+    }
+
+    internal class TextBoxBinding : ModelControlBinding
+    {
+        public override void UpdateControl(Control control, object value)
+        {
+            ((TextBox)control).Text = (string)ChangeType(value, typeof(string));
+        }
+
+        public override void UpdateDataSource(Control control, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object UpdateModel(Control control)
+        {
+            return ((TextBox)control).Text;
+        }
+    }
+
+    internal class ComboBoxBinding : ModelControlBinding
+    {
+        public override void UpdateControl(Control control, object value)
+        {
+            ((ComboBox)control).SelectedItem = value;
+        }
+
+        public override void UpdateDataSource(Control control, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object UpdateModel(Control control)
+        {
+            return ((ComboBox)control).SelectedItem;
+        }
+    }
+
+    internal class ListBoxBinding : ModelControlBinding
+    {
+        public override void UpdateControl(Control control, object value)
+        {
+            ((ListBox)control).SelectedItem = value;
+        }
+
+        public override void UpdateDataSource(Control control, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object UpdateModel(Control control)
+        {
+            return ((ListBox)control).SelectedItem;
+        }
+    }
+
+    internal class CheckBoxBinding : ModelControlBinding
+    {
+        public override void UpdateControl(Control control, object value)
+        {
+            ((CheckBox)control).Checked = (bool)ChangeType(value, typeof(bool));
+        }
+
+        public override void UpdateDataSource(Control control, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object UpdateModel(Control control)
+        {
+            return ((CheckBox)control).Checked;
+        }
+    }
+}
