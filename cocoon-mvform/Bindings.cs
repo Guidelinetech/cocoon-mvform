@@ -18,7 +18,10 @@ namespace cocoon.mvform.bindings
         {
 
             if (value == null)
-                return null;
+                if (conversionType.IsValueType)
+                    return Activator.CreateInstance(conversionType);
+                else
+                    return null;
 
             if (value.GetType() == conversionType)
                 return value;
