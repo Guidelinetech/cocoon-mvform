@@ -13,13 +13,12 @@ namespace cocoon.mvform
         internal T model;
         internal Type modelType;
         internal PropertyInfo[] modelProps;
-        internal ContainerControl view;
         internal Dictionary<Control, PropertyInfo> modelFields = new Dictionary<Control, PropertyInfo>();
         internal Dictionary<Control, object> dataSources = new Dictionary<Control, object>();
 
         internal Dictionary<Type, ModelControlBinding> bindings = new Dictionary<Type, ModelControlBinding>();
 
-        public ModelViewBinder(ContainerControl view, T model)
+        public ModelViewBinder(Control view, T model)
         {
 
             //add default implementations
@@ -27,15 +26,21 @@ namespace cocoon.mvform
             SetModelControlBinding(typeof(CheckBox), new CheckBoxBinding());
             SetModelControlBinding(typeof(ComboBox), new ComboBoxBinding());
             SetModelControlBinding(typeof(ListBox), new ListBoxBinding());
+            SetModelControlBinding(typeof(NumericUpDown), new NumericUpDownBinding());
 
             //get model and view info
             this.model = model;
-            this.view = view;
-
             modelType = typeof(T);
             modelProps = modelType.GetProperties();
 
             //process properties and controls
+            ProcessView(view);
+
+        }
+
+        public void ProcessView(Control view)
+        {
+
             foreach (PropertyInfo prop in modelProps)
             {
 
@@ -52,19 +57,18 @@ namespace cocoon.mvform
                 }
                 else
                     foreach (Control control in view.Controls)
-                        if (control.Name.StartsWith(prop.Name))
+                        if (control.Name == prop.Name)
                         {
                             modelFields.Add(control, prop);
 
                             if (dataSourceAttribute != null)
                                 dataSources.Add(control, dataSourceAttribute.dataSource);
 
+                            break;
+
                         }
 
             }
-
-            //update view with model
-            UpdateView();
 
         }
 
@@ -98,6 +102,7 @@ namespace cocoon.mvform
                     throw new NotImplementedException(string.Format("Binding for type '{0}' not implemented.", control.GetType()));
 
             }
+
         }
 
         public T UpdateModel()
@@ -130,9 +135,7 @@ namespace cocoon.mvform
                 bindings.Add(controlType, binding);
 
         }
-        
+
     }
-
-
     
 }

@@ -26,7 +26,15 @@ namespace cocoon.mvform.bindings
             if (conversionType.IsGenericType && conversionType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
                 conversionType = Nullable.GetUnderlyingType(conversionType);
 
-            return TypeDescriptor.GetConverter(conversionType).ConvertFrom(value);
+            try
+            {
+                return TypeDescriptor.GetConverter(conversionType).ConvertFrom(value);
+            }
+            catch
+            {
+                return Convert.ChangeType(value, conversionType);
+
+            }
 
         }
 
@@ -103,4 +111,23 @@ namespace cocoon.mvform.bindings
             return ((CheckBox)control).Checked;
         }
     }
+
+    internal class NumericUpDownBinding : ModelControlBinding
+    {
+        public override void UpdateControl(Control control, object value)
+        {
+            ((NumericUpDown)control).Value = (decimal)ChangeType(value, typeof(decimal));
+        }
+
+        public override void UpdateDataSource(Control control, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object UpdateModel(Control control)
+        {
+            return ((NumericUpDown)control).Value;
+        }
+    }
+
 }
