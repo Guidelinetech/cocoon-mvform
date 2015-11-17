@@ -69,6 +69,19 @@ namespace cocoon.mvform
                         }
 
             }
+            
+        }
+
+        public void AddDataSources(object dataSourcesObject)
+        {
+
+            Type type = dataSourcesObject.GetType();
+            PropertyInfo[] props = type.GetProperties();
+
+            foreach (PropertyInfo prop in props)
+                foreach (var field in modelFields)
+                    if (field.Key.Name == prop.Name)
+                        dataSources.Add(field.Key, prop.GetValue(dataSourcesObject));
 
         }
 
@@ -116,7 +129,10 @@ namespace cocoon.mvform
                 PropertyInfo prop = field.Value;
 
                 if (bindings.ContainsKey(control.GetType()))
-                    prop.SetValue(model, bindings[control.GetType()].UpdateModel(control));
+                {
+                    object value = bindings[control.GetType()].UpdateModel(control);
+                    prop.SetValue(model, ModelControlBinding.ChangeType(value, prop.PropertyType));
+                }
                 else
                     throw new NotImplementedException(string.Format("Binding for type '{0}' not implemented.", control.GetType()));
 
@@ -137,5 +153,5 @@ namespace cocoon.mvform
         }
 
     }
-    
+
 }

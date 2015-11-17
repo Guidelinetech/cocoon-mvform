@@ -67,7 +67,7 @@ namespace cocoon.mvform.bindings
 
         public override void UpdateDataSource(Control control, object value)
         {
-            throw new NotImplementedException();
+            ((ComboBox)control).DataSource = value;
         }
 
         public override object UpdateModel(Control control)
@@ -85,7 +85,7 @@ namespace cocoon.mvform.bindings
 
         public override void UpdateDataSource(Control control, object value)
         {
-            throw new NotImplementedException();
+            ((ListBox)control).DataSource = value;
         }
 
         public override object UpdateModel(Control control)
