@@ -9,16 +9,15 @@ namespace cocoon.mvform
 {
     public class ModelViewBinder<T>
     {
-
-        internal T model;
+        
         internal Type modelType;
         internal PropertyInfo[] modelProps;
         internal Dictionary<Control, PropertyInfo> modelFields = new Dictionary<Control, PropertyInfo>();
         internal Dictionary<Control, object> dataSources = new Dictionary<Control, object>();
 
         internal Dictionary<Type, ModelControlBinding> bindings = new Dictionary<Type, ModelControlBinding>();
-
-        public ModelViewBinder(Control view, T model)
+        
+        public ModelViewBinder(Control view)
         {
 
             //add default implementations
@@ -27,9 +26,9 @@ namespace cocoon.mvform
             SetModelControlBinding(typeof(ComboBox), new ComboBoxBinding());
             SetModelControlBinding(typeof(ListBox), new ListBoxBinding());
             SetModelControlBinding(typeof(NumericUpDown), new NumericUpDownBinding());
+            SetModelControlBinding(typeof(DateTimePicker), new DateTimePickerBinding());
 
             //get model and view info
-            this.model = model;
             modelType = typeof(T);
             modelProps = modelType.GetProperties();
 
@@ -57,7 +56,7 @@ namespace cocoon.mvform
                 }
                 else
                     foreach (Control control in view.Controls)
-                        if (control.Name == prop.Name)
+                        if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name))
                         {
                             modelFields.Add(control, prop);
 
@@ -85,7 +84,7 @@ namespace cocoon.mvform
 
         }
 
-        public void UpdateView()
+        public void UpdateView(T model)
         {
 
             //update datasources
@@ -118,7 +117,7 @@ namespace cocoon.mvform
 
         }
 
-        public T UpdateModel()
+        public T UpdateModel(T model, bool includeInvisibleControls = true)
         {
 
             //update model fields
@@ -128,6 +127,9 @@ namespace cocoon.mvform
                 Control control = field.Key;
                 PropertyInfo prop = field.Value;
 
+                if (!includeInvisibleControls && !control.Visible)
+                    continue;
+                
                 if (bindings.ContainsKey(control.GetType()))
                 {
                     object value = bindings[control.GetType()].UpdateModel(control);

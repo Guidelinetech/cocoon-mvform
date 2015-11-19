@@ -133,4 +133,22 @@ namespace cocoon.mvform.bindings
         }
     }
 
+    internal class DateTimePickerBinding : ModelControlBinding
+    {
+        public override void UpdateControl(Control control, object value)
+        {
+            ((DateTimePicker)control).Value = (DateTime)ChangeType(value, typeof(DateTime));
+        }
+
+        public override void UpdateDataSource(Control control, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object UpdateModel(Control control)
+        {
+            return ((DateTimePicker)control).Value;
+        }
+    }
+
 }
