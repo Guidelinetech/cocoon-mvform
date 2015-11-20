@@ -56,7 +56,7 @@ namespace cocoon.mvform
                 }
                 else
                     foreach (Control control in view.Controls)
-                        if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name))
+                        if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name) || control.Name == prop.Name + control.GetType().Name)
                         {
                             modelFields.Add(control, prop);
 
