@@ -42,7 +42,7 @@ namespace cocoon.mvform.bindings
         }
 
     }
-
+    
     internal class TextBoxBinding : ModelControlBinding
     {
         public override void UpdateControl(Control control, object value)

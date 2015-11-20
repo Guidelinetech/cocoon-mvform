@@ -43,9 +43,9 @@ namespace cocoon.mvform
             foreach (PropertyInfo prop in modelProps)
             {
 
-                var dataSourceAttribute = prop.GetCustomAttribute<DataSource>(true);
-                var valueForAttribute = prop.GetCustomAttribute<ValueFor>(true);
-
+                DataSource dataSourceAttribute = prop.GetCustomAttribute<DataSource>(true);
+                ValueFor valueForAttribute = prop.GetCustomAttribute<ValueFor>(true);
+                
                 if (valueForAttribute != null)
                 {
                     modelFields.Add(valueForAttribute.valueForControl, prop);
@@ -56,6 +56,7 @@ namespace cocoon.mvform
                 }
                 else
                     foreach (Control control in view.Controls)
+                    {
                         if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name) || control.Name == prop.Name + control.GetType().Name)
                         {
                             modelFields.Add(control, prop);
@@ -66,6 +67,7 @@ namespace cocoon.mvform
                             break;
 
                         }
+                    }
 
             }
             
