@@ -14,31 +14,33 @@ namespace cocoon.mvform
         internal PropertyInfo[] modelProps;
         internal Dictionary<Control, PropertyInfo> modelFields = new Dictionary<Control, PropertyInfo>();
         internal Dictionary<Control, object> dataSources = new Dictionary<Control, object>();
-
         internal Dictionary<Type, ModelControlBinding> bindings = new Dictionary<Type, ModelControlBinding>();
         
-        public ModelViewBinder(Control view)
+        public ModelViewBinder(Control view, List<Type> ignoredControlTypes = null)
         {
 
             //add default implementations
-            SetModelControlBinding(typeof(TextBox), new TextBoxBinding());
-            SetModelControlBinding(typeof(CheckBox), new CheckBoxBinding());
-            SetModelControlBinding(typeof(ComboBox), new ComboBoxBinding());
-            SetModelControlBinding(typeof(ListBox), new ListBoxBinding());
-            SetModelControlBinding(typeof(NumericUpDown), new NumericUpDownBinding());
-            SetModelControlBinding(typeof(DateTimePicker), new DateTimePickerBinding());
+            SetModelControlBinding(new TextBoxBinding());
+            SetModelControlBinding(new CheckBoxBinding());
+            SetModelControlBinding(new ComboBoxBinding());
+            SetModelControlBinding(new ListBoxBinding());
+            SetModelControlBinding(new NumericUpDownBinding());
+            SetModelControlBinding(new DateTimePickerBinding());
 
             //get model and view info
             modelType = typeof(T);
             modelProps = modelType.GetProperties();
 
             //process properties and controls
-            ProcessView(view);
+            ProcessView(view, ignoredControlTypes);
 
         }
 
-        public void ProcessView(Control view)
+        public void ProcessView(Control view, List<Type> ignoredControlTypes = null)
         {
+
+            if (ignoredControlTypes == null)
+                ignoredControlTypes = new List<Type>() { typeof(Label), typeof(Button) };
 
             foreach (PropertyInfo prop in modelProps)
             {
@@ -57,6 +59,10 @@ namespace cocoon.mvform
                 else
                     foreach (Control control in view.Controls)
                     {
+
+                        if (ignoredControlTypes.Contains(control.GetType()))
+                            continue;
+
                         if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name) || control.Name == prop.Name + control.GetType().Name)
                         {
                             modelFields.Add(control, prop);
@@ -146,13 +152,13 @@ namespace cocoon.mvform
 
         }
 
-        public void SetModelControlBinding(Type controlType, ModelControlBinding binding)
+        public void SetModelControlBinding(ModelControlBinding binding)
         {
 
-            if (bindings.ContainsKey(controlType))
-                bindings[controlType] = binding;
+            if (bindings.ContainsKey(binding.ControlType))
+                bindings[binding.ControlType] = binding;
             else
-                bindings.Add(controlType, binding);
+                bindings.Add(binding.ControlType, binding);
 
         }
 

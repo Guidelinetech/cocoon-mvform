@@ -8,6 +8,8 @@ namespace cocoon.mvform.bindings
     public abstract class ModelControlBinding
     {
 
+        public abstract Type ControlType { get; }
+
         public abstract void UpdateControl(Control control, object value);
 
         public abstract object UpdateModel(Control control);
@@ -42,9 +44,17 @@ namespace cocoon.mvform.bindings
         }
 
     }
-    
+
     internal class TextBoxBinding : ModelControlBinding
     {
+        public override Type ControlType
+        {
+            get
+            {
+                return typeof(TextBox);
+            }
+        }
+
         public override void UpdateControl(Control control, object value)
         {
             ((TextBox)control).Text = (string)ChangeType(value, typeof(string));
@@ -63,6 +73,15 @@ namespace cocoon.mvform.bindings
 
     internal class ComboBoxBinding : ModelControlBinding
     {
+
+        public override Type ControlType
+        {
+            get
+            {
+                return typeof(ComboBox);
+            }
+        }
+
         public override void UpdateControl(Control control, object value)
         {
             ((ComboBox)control).SelectedItem = value;
@@ -81,6 +100,15 @@ namespace cocoon.mvform.bindings
 
     internal class ListBoxBinding : ModelControlBinding
     {
+
+        public override Type ControlType
+        {
+            get
+            {
+                return typeof(ListBox);
+            }
+        }
+
         public override void UpdateControl(Control control, object value)
         {
             ((ListBox)control).SelectedItem = value;
@@ -99,6 +127,15 @@ namespace cocoon.mvform.bindings
 
     internal class CheckBoxBinding : ModelControlBinding
     {
+
+        public override Type ControlType
+        {
+            get
+            {
+                return typeof(CheckBox);
+            }
+        }
+
         public override void UpdateControl(Control control, object value)
         {
             ((CheckBox)control).Checked = (bool)ChangeType(value, typeof(bool));
@@ -117,6 +154,15 @@ namespace cocoon.mvform.bindings
 
     internal class NumericUpDownBinding : ModelControlBinding
     {
+
+        public override Type ControlType
+        {
+            get
+            {
+                return typeof(NumericUpDown);
+            }
+        }
+
         public override void UpdateControl(Control control, object value)
         {
             ((NumericUpDown)control).Value = (decimal)ChangeType(value, typeof(decimal));
@@ -135,6 +181,15 @@ namespace cocoon.mvform.bindings
 
     internal class DateTimePickerBinding : ModelControlBinding
     {
+
+        public override Type ControlType
+        {
+            get
+            {
+                return typeof(DateTimePicker);
+            }
+        }
+
         public override void UpdateControl(Control control, object value)
         {
             ((DateTimePicker)control).Value = (DateTime)ChangeType(value, typeof(DateTime));
