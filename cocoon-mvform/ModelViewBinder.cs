@@ -9,13 +9,13 @@ namespace cocoon.mvform
 {
     public class ModelViewBinder<T>
     {
-        
+
         internal Type modelType;
         internal PropertyInfo[] modelProps;
         internal Dictionary<Control, PropertyInfo> modelFields = new Dictionary<Control, PropertyInfo>();
         internal Dictionary<Control, object> dataSources = new Dictionary<Control, object>();
         internal Dictionary<Type, ModelControlBinding> bindings = new Dictionary<Type, ModelControlBinding>();
-        
+
         public ModelViewBinder(Control view, List<Type> ignoredControlTypes = null)
         {
 
@@ -47,7 +47,7 @@ namespace cocoon.mvform
 
                 DataSource dataSourceAttribute = prop.GetCustomAttribute<DataSource>(true);
                 ValueFor valueForAttribute = prop.GetCustomAttribute<ValueFor>(true);
-                
+
                 if (valueForAttribute != null)
                 {
                     modelFields.Add(valueForAttribute.valueForControl, prop);
@@ -76,7 +76,7 @@ namespace cocoon.mvform
                     }
 
             }
-            
+
         }
 
         public void AddDataSources(object dataSourcesObject)
@@ -94,7 +94,7 @@ namespace cocoon.mvform
 
         public void UpdateView(T model)
         {
-
+            
             //update datasources
             foreach (var data in dataSources)
             {
@@ -103,7 +103,13 @@ namespace cocoon.mvform
                 object dataSource = data.Value;
 
                 if (bindings.ContainsKey(control.GetType()))
-                    bindings[control.GetType()].UpdateDataSource(control, dataSource);
+                    try
+                    {
+                        bindings[control.GetType()].UpdateDataSource(control, dataSource);
+                    }
+                    catch
+                    {
+                    }
                 else
                     throw new NotImplementedException(string.Format("Binding for type '{0}' not implemented.", control.GetType()));
 
@@ -117,7 +123,13 @@ namespace cocoon.mvform
                 PropertyInfo prop = field.Value;
 
                 if (bindings.ContainsKey(control.GetType()))
-                    bindings[control.GetType()].UpdateControl(control, prop.GetValue(model));
+                    try
+                    {
+                        bindings[control.GetType()].UpdateControl(control, prop.GetValue(model));
+                    }
+                    catch
+                    {
+                    }
                 else
                     throw new NotImplementedException(string.Format("Binding for type '{0}' not implemented.", control.GetType()));
 
@@ -137,7 +149,7 @@ namespace cocoon.mvform
 
                 if (!includeInvisibleControls && !control.Visible)
                     continue;
-                
+
                 if (bindings.ContainsKey(control.GetType()))
                 {
                     object value = bindings[control.GetType()].UpdateModel(control);
