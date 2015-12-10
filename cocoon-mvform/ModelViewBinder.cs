@@ -89,14 +89,16 @@ namespace cocoon.mvform
 
         public void AddDataSources(object dataSourcesObject)
         {
-
-            Type type = dataSourcesObject.GetType();
-            PropertyInfo[] props = type.GetProperties();
+            
+            PropertyInfo[] props = dataSourcesObject.GetType().GetProperties();
 
             foreach (PropertyInfo prop in props)
                 foreach (var field in modelFields)
-                    if (field.Key.Name == prop.Name)
+                {
+                    Control control = field.Key;
+                    if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name) || control.Name == prop.Name + control.GetType().Name)
                         dataSources.Add(field.Key, prop.GetValue(dataSourcesObject));
+                }
 
         }
 

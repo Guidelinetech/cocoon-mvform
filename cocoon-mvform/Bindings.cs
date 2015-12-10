@@ -89,7 +89,7 @@ namespace cocoon.mvform.bindings
 
         public override void UpdateDataSource(Control control, object value)
         {
-            ((ComboBox)control).DataSource = value;
+            ((ComboBox)control).DataSource = Activator.CreateInstance(value.GetType(), value);
         }
 
         public override object UpdateModel(Control control)
@@ -116,7 +116,7 @@ namespace cocoon.mvform.bindings
 
         public override void UpdateDataSource(Control control, object value)
         {
-            ((ListBox)control).DataSource = value;
+            ((ListBox)control).DataSource = Activator.CreateInstance(value.GetType(), value);
         }
 
         public override object UpdateModel(Control control)
