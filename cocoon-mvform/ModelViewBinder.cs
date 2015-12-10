@@ -36,11 +36,19 @@ namespace cocoon.mvform
 
         }
 
+        public void ProcessView(Control[] views, List<Type> ignoredControlTypes = null)
+        {
+
+            foreach (Control view in views)
+                ProcessView(view, ignoredControlTypes);
+
+        }
+
         public void ProcessView(Control view, List<Type> ignoredControlTypes = null)
         {
 
             if (ignoredControlTypes == null)
-                ignoredControlTypes = new List<Type>() { typeof(Label), typeof(Button) };
+                ignoredControlTypes = new List<Type>() { typeof(Label), typeof(Button), typeof(PictureBox) };
 
             foreach (PropertyInfo prop in modelProps)
             {
