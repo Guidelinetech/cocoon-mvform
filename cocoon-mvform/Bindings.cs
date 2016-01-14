@@ -152,6 +152,33 @@ namespace cocoon.mvform.bindings
         }
     }
 
+    internal class RadioButtonBinding : ModelControlBinding
+    {
+
+        public override Type ControlType
+        {
+            get
+            {
+                return typeof(RadioButton);
+            }
+        }
+
+        public override void UpdateControl(Control control, object value)
+        {
+            ((RadioButton)control).Checked = (bool)ChangeType(value, typeof(bool));
+        }
+
+        public override void UpdateDataSource(Control control, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object UpdateModel(Control control)
+        {
+            return ((RadioButton)control).Checked;
+        }
+    }
+
     internal class NumericUpDownBinding : ModelControlBinding
     {
 

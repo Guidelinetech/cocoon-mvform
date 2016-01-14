@@ -16,12 +16,27 @@ namespace cocoon.mvform
         internal Dictionary<Control, object> dataSources = new Dictionary<Control, object>();
         internal Dictionary<Type, ModelControlBinding> bindings = new Dictionary<Type, ModelControlBinding>();
 
-        public ModelViewBinder(Control view, List<Type> ignoredControlTypes = null)
+        public ModelViewBinder(Control view, bool recursive = false, List<Type> ignoredControlTypes = null)
+        {
+
+            init(new Control[] { view }, recursive, ignoredControlTypes);
+
+        }
+
+        public ModelViewBinder(Control[] views, bool recursive = false, List<Type> ignoredControlTypes = null)
+        {
+
+            init(views, recursive, ignoredControlTypes);
+
+        }
+
+        private void init(Control[] views, bool recursive, List<Type> ignoredControlTypes)
         {
 
             //add default implementations
             SetModelControlBinding(new TextBoxBinding());
             SetModelControlBinding(new CheckBoxBinding());
+            SetModelControlBinding(new RadioButtonBinding());
             SetModelControlBinding(new ComboBoxBinding());
             SetModelControlBinding(new ListBoxBinding());
             SetModelControlBinding(new NumericUpDownBinding());
@@ -32,25 +47,65 @@ namespace cocoon.mvform
             modelProps = modelType.GetProperties();
 
             //process properties and controls
-            ProcessView(view, ignoredControlTypes);
+            ProcessView(views, recursive, ignoredControlTypes);
 
         }
 
-        public void ProcessView(Control[] views, List<Type> ignoredControlTypes = null)
+        public void ProcessView(Control[] views, bool recursive, List<Type> ignoredControlTypes = null)
         {
 
             foreach (Control view in views)
-                ProcessView(view, ignoredControlTypes);
+                ProcessView(view, recursive, ignoredControlTypes);
 
         }
 
-        public void ProcessView(Control view, List<Type> ignoredControlTypes = null)
+        public void ProcessView(Control view, bool recursive, List<Type> ignoredControlTypes = null)
         {
 
             if (ignoredControlTypes == null)
                 ignoredControlTypes = new List<Type>() { typeof(Label), typeof(Button), typeof(PictureBox) };
 
-            foreach (PropertyInfo prop in modelProps)
+            foreach (Control control in view.Controls)
+            {
+
+                if (ignoredControlTypes.Contains(control.GetType()))
+                    continue;
+
+                foreach (PropertyInfo prop in modelProps)
+                {
+
+                    DataSource dataSourceAttribute = prop.GetCustomAttribute<DataSource>(true);
+                    ValueFor valueForAttribute = prop.GetCustomAttribute<ValueFor>(true);
+
+                    if (valueForAttribute != null)
+                    {
+                        modelFields.Add(valueForAttribute.valueForControl, prop);
+
+                        if (dataSourceAttribute != null)
+                            dataSources.Add(valueForAttribute.valueForControl, dataSourceAttribute.dataSource);
+
+                        break;
+
+                    }
+                    else if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name) || control.Name == prop.Name + control.GetType().Name)
+                    {
+                        modelFields.Add(control, prop);
+
+                        if (dataSourceAttribute != null)
+                            dataSources.Add(control, dataSourceAttribute.dataSource);
+
+                        break;
+
+                    }
+                    
+                }
+
+                if (recursive && control.Controls.Count > 0)
+                    ProcessView(control, true, ignoredControlTypes);
+
+            }
+
+            /*foreach (PropertyInfo prop in modelProps)
             {
 
                 DataSource dataSourceAttribute = prop.GetCustomAttribute<DataSource>(true);
@@ -81,15 +136,22 @@ namespace cocoon.mvform
                             break;
 
                         }
+                        else
+                        {
+
+                            if (recursive && control.Controls.Count > 0)
+                                ProcessView(control, true, ignoredControlTypes);
+
+                        }
                     }
 
-            }
+            }*/
 
         }
 
         public void AddDataSources(object dataSourcesObject)
         {
-            
+
             PropertyInfo[] props = dataSourcesObject.GetType().GetProperties();
 
             foreach (PropertyInfo prop in props)
@@ -104,7 +166,7 @@ namespace cocoon.mvform
 
         public void UpdateView(T model)
         {
-            
+
             //update datasources
             foreach (var data in dataSources)
             {
