@@ -117,6 +117,7 @@ namespace cocoon.mvform.bindings
         public override void UpdateDataSource(Control control, object value)
         {
             ((ListBox)control).DataSource = Activator.CreateInstance(value.GetType(), value);
+            ((ListBox)control).ClearSelected();
         }
 
         public override object UpdateModel(Control control)
