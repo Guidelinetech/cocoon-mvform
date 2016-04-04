@@ -70,8 +70,9 @@ namespace cocoon.mvform
                         break;
 
                     }
-                    else if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name) || control.Name == prop.Name + control.GetType().Name)
+                    else if (control.Name == prop.Name || control.Name == prop.Name + control.GetType().Name)
                     {
+
                         modelFields.Add(control, prop);
 
                         if (dataSourceAttribute != null)
@@ -90,18 +91,31 @@ namespace cocoon.mvform
             
         }
 
-        public void AddDataSources(object dataSourcesObject)
+        public void AddDataSources(object dataSourcesObject, string[] removeListPrefixes = null)
         {
 
             PropertyInfo[] props = dataSourcesObject.GetType().GetProperties();
 
             foreach (PropertyInfo prop in props)
+            {
+
+                string listName = prop.Name;
+
+                if (removeListPrefixes != null)
+                    foreach (string prefix in removeListPrefixes)
+                        if (listName.StartsWith(prefix))
+                        {
+                            listName = listName.Substring(prefix.Length);
+                            break;
+                        }
+
                 foreach (var field in modelFields)
                 {
                     Control control = field.Key;
-                    if (control.Name == prop.Name || (control.Tag is string && (string)control.Tag == prop.Name) || control.Name == prop.Name + control.GetType().Name)
+                    if (control.Name == listName || control.Name == listName + control.GetType().Name)
                         dataSources.Add(field.Key, prop.GetValue(dataSourcesObject));
                 }
+            }
 
         }
 
@@ -153,10 +167,7 @@ namespace cocoon.mvform
 
         public T UpdateModel(T model, bool includeInvisibleControls = true)
         {
-
-            if (model == null)
-                model = Activator.CreateInstance<T>();
-
+            
             //update model fields
             foreach (var field in modelFields)
             {

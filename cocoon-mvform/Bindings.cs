@@ -45,7 +45,7 @@ namespace cocoon.mvform.bindings
 
     }
 
-    internal class TextBoxBinding : ModelControlBinding
+    public class TextBoxBinding : ModelControlBinding
     {
         public override Type ControlType
         {
@@ -71,7 +71,7 @@ namespace cocoon.mvform.bindings
         }
     }
 
-    internal class ComboBoxBinding : ModelControlBinding
+    public class ComboBoxBinding : ModelControlBinding
     {
 
         public override Type ControlType
@@ -98,7 +98,7 @@ namespace cocoon.mvform.bindings
         }
     }
 
-    internal class ListBoxBinding : ModelControlBinding
+    public class ListBoxBinding : ModelControlBinding
     {
 
         public override Type ControlType
@@ -126,7 +126,7 @@ namespace cocoon.mvform.bindings
         }
     }
 
-    internal class CheckBoxBinding : ModelControlBinding
+    public class CheckBoxBinding : ModelControlBinding
     {
 
         public override Type ControlType
@@ -153,7 +153,7 @@ namespace cocoon.mvform.bindings
         }
     }
 
-    internal class RadioButtonBinding : ModelControlBinding
+    public class RadioButtonBinding : ModelControlBinding
     {
 
         public override Type ControlType
@@ -180,7 +180,7 @@ namespace cocoon.mvform.bindings
         }
     }
 
-    internal class NumericUpDownBinding : ModelControlBinding
+    public class NumericUpDownBinding : ModelControlBinding
     {
 
         public override Type ControlType
@@ -207,7 +207,7 @@ namespace cocoon.mvform.bindings
         }
     }
 
-    internal class DateTimePickerBinding : ModelControlBinding
+    public class DateTimePickerBinding : ModelControlBinding
     {
 
         public override Type ControlType
