@@ -7,7 +7,7 @@ using cocoon.mvform.bindings;
 
 namespace cocoon.mvform
 {
-    public class ModelViewBinder<T>
+    public class ModelViewBinder<T> where T : new()
     {
 
         internal Type modelType;
@@ -81,14 +81,14 @@ namespace cocoon.mvform
                         break;
 
                     }
-                    
+
                 }
 
                 if (recursive && control.Controls.Count > 0)
                     ProcessView(control, true, ignoredControlTypes);
 
             }
-            
+
         }
 
         public void AddDataSources(object dataSourcesObject, string[] removeListPrefixes = null)
@@ -143,7 +143,7 @@ namespace cocoon.mvform
             }
 
             //update fields
-            if(model != null)
+            if (model != null)
                 foreach (var field in modelFields)
                 {
 
@@ -167,7 +167,7 @@ namespace cocoon.mvform
 
         public T UpdateModel(T model, bool includeInvisibleControls = true)
         {
-            
+
             //update model fields
             foreach (var field in modelFields)
             {
@@ -201,6 +201,13 @@ namespace cocoon.mvform
                 bindings.Add(binding.ControlType, binding);
 
         }
+        
+    }
+
+    public class ModelViewControl<T> : UserControl where T : new()
+    {
+
+        public ModelViewBinder<T> modelView = new ModelViewBinder<T>();
 
     }
 
