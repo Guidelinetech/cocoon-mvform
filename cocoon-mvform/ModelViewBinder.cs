@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using cocoon.mvform.attributes;
@@ -128,17 +129,13 @@ namespace cocoon.mvform
 
                 Control control = data.Key;
                 object dataSource = data.Value;
+                ModelControlBinding binding = getControlBinding(control);
 
-                if (bindings.ContainsKey(control.GetType()))
-                    try
-                    {
-                        bindings[control.GetType()].UpdateDataSource(control, dataSource);
-                    }
-                    catch
-                    {
-                    }
-                else
-                    throw new NotImplementedException(string.Format("Binding for type '{0}' not implemented.", control.GetType()));
+                try
+                {
+                    binding.UpdateDataSource(control, dataSource);
+                }
+                catch { }
 
             }
 
@@ -149,17 +146,15 @@ namespace cocoon.mvform
 
                     Control control = field.Key;
                     PropertyInfo prop = field.Value;
+                    ModelControlBinding binding = getControlBinding(control);
 
-                    if (bindings.ContainsKey(control.GetType()))
-                        try
-                        {
-                            bindings[control.GetType()].UpdateControl(control, prop.GetValue(model));
-                        }
-                        catch
-                        {
-                        }
-                    else
-                        throw new NotImplementedException(string.Format("Binding for type '{0}' not implemented.", control.GetType()));
+                    try
+                    {
+                        binding.UpdateControl(control, prop.GetValue(model));
+                    }
+                    catch
+                    {
+                    }
 
                 }
 
@@ -178,14 +173,11 @@ namespace cocoon.mvform
                 if (!includeInvisibleControls && !control.Visible)
                     continue;
 
-                if (bindings.ContainsKey(control.GetType()))
-                {
-                    object value = bindings[control.GetType()].UpdateModel(control);
-                    prop.SetValue(model, ModelControlBinding.ChangeType(value, prop.PropertyType));
-                }
-                else
-                    throw new NotImplementedException(string.Format("Binding for type '{0}' not implemented.", control.GetType()));
+                ModelControlBinding binding = getControlBinding(control);
 
+                object value = binding.UpdateModel(control);
+                prop.SetValue(model, ModelControlBinding.ChangeType(value, prop.PropertyType));
+     
             }
 
             return model;
@@ -201,7 +193,25 @@ namespace cocoon.mvform
                 bindings.Add(binding.ControlType, binding);
 
         }
-        
+
+        private ModelControlBinding getControlBinding(Control control)
+        {
+
+            Type controlType = control.GetType();
+            ModelControlBinding binding = null;
+
+            if (bindings.ContainsKey(controlType))
+                binding = bindings[controlType];
+            else if (bindings.Any(b => controlType.IsSubclassOf(b.Key)))
+                binding = bindings.First(b => controlType.IsSubclassOf(b.Key)).Value;
+
+            if (binding == null)
+                throw new NotImplementedException(string.Format("Binding for type '{0}' not implemented.", controlType));
+
+            return binding;
+
+        }
+
     }
 
     public class ModelViewControl<T> : UserControl where T : new()
