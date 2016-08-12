@@ -18,13 +18,13 @@ namespace cocoon.mvform.bindings
 
         public static object ChangeType(object value, Type conversionType)
         {
-
+            
             if (value == null)
                 if (conversionType.IsValueType)
                     return Activator.CreateInstance(conversionType);
                 else
                     return null;
-
+            
             if (value.GetType() == conversionType)
                 return value;
 
@@ -57,6 +57,7 @@ namespace cocoon.mvform.bindings
 
         public override void UpdateControl(Control control, object value)
         {
+            
             ((TextBox)control).Text = (string)ChangeType(value, typeof(string));
         }
 
