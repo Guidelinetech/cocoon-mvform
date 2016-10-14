@@ -47,7 +47,7 @@ namespace cocoon.mvform
         {
 
             if (ignoredControlTypes == null)
-                ignoredControlTypes = new List<Type>() { typeof(Label), typeof(Button), typeof(PictureBox) };
+                ignoredControlTypes = new List<Type>() { typeof(Label), typeof(Button), typeof(PictureBox), typeof(TableLayoutPanel) };
 
             foreach (Control control in view.Controls)
             {
